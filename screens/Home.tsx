@@ -3,6 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CounterContext} from '../utils/ContextApi';
 import Cards from '../components/ui/Cards';
 import AddTask from '../components/ui/Task';
+import List from '../components/ui/List';
 
 export default function Home() {
   const {modalView, modalVisible}: any = useContext(CounterContext);
@@ -56,6 +57,7 @@ export default function Home() {
         <AddTask />
       </View>
       {/* Sheet */}
+      {/* <List /> */}
     </View>
   );
 }

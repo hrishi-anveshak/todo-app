@@ -22,11 +22,11 @@ export default function AddTask() {
   const [data, setData] = useState<DateType>({});
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('Ongoing');
-  const descriptionChange = useCallback((text: string) => {
-    setData(prev => ({...prev, description: text}));
-  }, []);
   const titleChange = useCallback((text: string) => {
     setData(prev => ({...prev, title: text}));
+  }, []);
+  const descriptionChange = useCallback((text: string) => {
+    setData(prev => ({...prev, description: text}));
   }, []);
   const statusChange = useCallback((text: string) => {
     setData(prev => ({...prev, status: text}));
