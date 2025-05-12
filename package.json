@@ -10,8 +10,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.11.0",
+    "motion": "^12.11.0",
     "react": "19.0.0",
     "react-native": "0.79.2",
+    "react-native-calendars": "^1.1312.0",
+    "react-native-reanimated": "^3.17.5",
     "react-native-safe-area-context": "^5.4.0"
   },
   "devDependencies": {

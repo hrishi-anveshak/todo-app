@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 
 export default function Cards({data}: any) {
   const styles = StyleSheet.create({
@@ -35,13 +35,13 @@ export default function Cards({data}: any) {
       fontFamily: 'Poppins-Bold',
     },
   });
-  console.log(data);
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card}>
       <Text style={styles.head}>{data.type}</Text>
       <View style={styles.circle}>
         <Text style={styles.circleText}> {'>'}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

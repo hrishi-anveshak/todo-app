@@ -2,6 +2,8 @@ import React, {useContext} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CounterContext} from '../utils/ContextApi';
 import Cards from '../components/ui/Cards';
+import AddTask from '../components/ui/Task';
+
 export default function Home() {
   const {modalView, modalVisible}: any = useContext(CounterContext);
   const types = [
@@ -12,7 +14,7 @@ export default function Home() {
       circle: '#FFCB20',
     },
     {
-      type: 'Paused',
+      type: 'Pending',
       color: '#B7F0FF',
       fontColor: '#0E3946',
       circle: '#53DAFE',
@@ -22,12 +24,6 @@ export default function Home() {
       color: '#CDFFB9',
       fontColor: '#1E4113',
       circle: '#82F258',
-    },
-    {
-      type: 'Deleted',
-      color: '#FFC7EA',
-      fontColor: '#4A1738',
-      circle: '#FF55C0',
     },
   ];
   console.log(modalVisible);
@@ -54,6 +50,12 @@ export default function Home() {
           );
         })}
       </View>
+
+      {/* Modal */}
+      <View style={styles.modal}>
+        <AddTask />
+      </View>
+      {/* Sheet */}
     </View>
   );
 }
@@ -61,7 +63,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   page: {
     marginHorizontal: 20,
-    marginTop: 60,
+    marginTop: 100,
     flex: 1,
     position: 'relative',
   },
@@ -105,5 +107,11 @@ const styles = StyleSheet.create({
   },
   workCards: {
     marginTop: -20,
+  },
+  modal: {
+    justifyContent: 'center',
+    margin: 'auto',
+    width: 100,
+    height: 100,
   },
 });
