@@ -1,10 +1,8 @@
 import React, {createContext, useState, ReactNode} from 'react';
 
 interface CounterContextType {
-  count: number;
-  increment: () => void;
-  decrement: () => void;
-  reset: () => void;
+  modalVisible: boolean;
+  modalView: () => void;
 }
 
 export const CounterContext = createContext<CounterContextType | undefined>(
@@ -14,14 +12,11 @@ export const CounterContext = createContext<CounterContextType | undefined>(
 export const CounterProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
-  const [count, setCount] = useState<number>(0);
-
-  const increment = () => setCount(prev => prev + 1);
-  const decrement = () => setCount(prev => prev - 1);
-  const reset = () => setCount(0);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const modalView = () => setModalVisible(!modalVisible);
 
   return (
-    <CounterContext.Provider value={{count, increment, decrement, reset}}>
+    <CounterContext.Provider value={{modalVisible, modalView}}>
       {children}
     </CounterContext.Provider>
   );
