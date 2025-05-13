@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {CounterContext} from '../../utils/ContextApi';
 import {GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 import {
@@ -7,84 +7,21 @@ import {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+
+import EditTask from './EditTask';
+// import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function List() {
-  const {handleSheetChanges, bottomSheetModalRef, sheet}: any =
-    useContext(CounterContext);
-
-  const newData = [
-    {
-      name: 'Buy groceries',
-      description:
-        'Purchase milk, eggs, and bread from the supermarket. Don’t forget to check for sales or discounts. Make sure to buy some fresh fruits and vegetables as well.',
-      date: '2025-05-13',
-      status: 'Ongoing',
-    },
-    {
-      name: 'Workout',
-      description:
-        '1-hour gym session focusing on strength training. Start with a warm-up, followed by exercises targeting major muscle groups. Make sure to stretch after the workout to prevent injuries.',
-      date: '2025-05-13',
-      status: 'Ongoing',
-    },
-    {
-      name: 'Read book',
-      description:
-        'Finish reading Chapter 4 of Atomic Habits. Take notes on important insights, and review the previous chapters to understand how to build habits effectively.',
-      date: '2025-05-14',
-      status: 'Ongoing',
-    },
-    {
-      name: 'Team meeting',
-      description:
-        'Discuss project milestones and blockers. Prepare a status update on the current tasks and present the challenges faced in the ongoing sprint. Make sure to note down the action points.',
-      date: '2025-05-12',
-      status: 'Completed',
-    },
-    {
-      name: 'Submit report',
-      description:
-        'Final submission of quarterly sales report. Double-check the numbers and ensure all relevant data is included. Review the report for any grammatical errors before submitting.',
-      date: '2025-05-10',
-      status: 'Completed',
-    },
-    {
-      name: 'Pay electricity bill',
-      description:
-        'Use online banking to pay the electricity bill. Confirm the due amount and verify the payment details before proceeding. Make sure to get a confirmation receipt.',
-      date: '2025-05-11',
-      status: 'Completed',
-    },
-    {
-      name: 'Call plumber',
-      description:
-        'Fix the leaking kitchen tap. Make sure to ask about any additional plumbing issues that might need attention. Schedule a follow-up if required.',
-      date: '2025-05-15',
-      status: 'Pending',
-    },
-    {
-      name: 'Doctor appointment',
-      description:
-        'Routine checkup with Dr. Smith at 4 PM. Don’t forget to bring the previous test results for review. Prepare any questions regarding your health to discuss during the appointment.',
-      date: '2025-05-16',
-      status: 'Pending',
-    },
-    {
-      name: 'Renew subscription',
-      description:
-        'Renew cloud storage subscription for 1 year. Check for any promotional offers available and make sure to keep a record of the transaction for future reference.',
-      date: '2025-05-18',
-      status: 'Pending',
-    },
-    {
-      name: 'Design logo',
-      description:
-        'Draft initial logo concepts for client project. Include a variety of color schemes and designs for the client to choose from. Prepare a presentation of the top 3 ideas.',
-      date: '2025-05-17',
-      status: 'Ongoing',
-    },
-  ];
+  const {
+    todo,
+    editData,
+    handleSheetChanges,
+    bottomSheetModalRef,
+    sheet,
+    editModalView,
+    edit,
+  }: any = useContext(CounterContext);
 
   const colorPalette = [
     {
@@ -212,7 +149,7 @@ export default function List() {
           onChange={handleSheetChanges}>
           <BottomSheetView style={styles.contentContainer}>
             <BottomSheetScrollView contentContainerStyle={styles.scrollContent}>
-              {newData.map((val: any, index: number) => {
+              {todo.map((val: any, index: number) => {
                 const randomColor = getRandomColor();
                 return (
                   <View
@@ -224,9 +161,15 @@ export default function List() {
                     <Text
                       numberOfLines={2}
                       style={[styles.head, {color: randomColor.headingColor}]}>
-                      {val.name}
+                      {val.title}
                     </Text>
-
+                    <TouchableOpacity
+                      onPress={() => {
+                        editData(index, val);
+                        editModalView();
+                      }}>
+                      <Text>Edit</Text>
+                    </TouchableOpacity>
                     <Text
                       style={[
                         styles.des,
@@ -254,6 +197,7 @@ export default function List() {
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
+      <EditTask editData={edit} />
     </GestureHandlerRootView>
   );
 }
@@ -264,7 +208,7 @@ const styles = StyleSheet.create({
   },
   task: {
     width: '49%',
-    borderRadius: 20,
+    borderRadius: 15,
     borderColor: '#000',
     paddingVertical: 15,
     paddingHorizontal: 10,
@@ -279,7 +223,6 @@ const styles = StyleSheet.create({
   des: {
     fontFamily: 'Poppins-Regular',
     fontSize: 13,
-    marginTop: 6,
   },
 
   date: {
@@ -301,6 +244,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+    marginTop: 20,
   },
   scrollContent: {
     flexDirection: 'row',

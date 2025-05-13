@@ -27,7 +27,6 @@ export default function Home() {
       circle: '#82F258',
     },
   ];
-  console.log(modalVisible);
   return (
     <View style={styles.page}>
       {!sheet && (

@@ -12,63 +12,66 @@ import {
 import {CounterContext} from '../../utils/ContextApi';
 import {Picker} from '@react-native-picker/picker';
 
-interface DateType {
+interface DataType {
   dateString?: string;
   date?: string;
   status?: string;
+  title?: string;
+  description?: string;
 }
-export default function AddTask() {
+export default function EditTask({editData}: any) {
   const initialState = {
-    title: '',
-    description: '',
-    date: '',
-    status: '',
+    title: editData?.title,
+    description: editData?.description,
+    date: editData?.date,
+    status: editData?.status,
+    key: editData?.key,
   };
-  const {modalVisible, modalView, todo, addTodo, edit}: any =
+  console.log(editData);
+  const {editModalVisible, editModalView, todo, addTodo, edit}: any =
     useContext(CounterContext);
-  const [taskDetails, setTaskDetails] = useState({
-    ...initialState,
-  });
 
   const handleOnChange = (val: any, name: string) => {
     setData(prev => ({...prev, [name]: val}));
   };
 
-  const [data, setData] = useState<DateType>({});
+  const [data, setData] = useState<DataType>({...initialState});
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  console.log(data);
-  console.log(todo);
+  console.log(initialState);
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={modalVisible}
+      visible={editModalVisible}
       onRequestClose={() => {
-        modalView();
+        editModalView();
         setData({});
         setCalendarVisible(false);
       }}>
       <Pressable
         style={styles.back}
         onPress={() => {
-          modalView();
+          editModalView();
           setData({});
           setCalendarVisible(false);
         }}></Pressable>
       <View style={styles.modal}>
-        <Text style={styles.head}>Add Task</Text>
+        <Text style={styles.head}>Edit Task</Text>
         <View style={styles.userInput}>
           <TextInput
             style={styles.input}
             placeholder="Title"
             placeholderTextColor="#000"
+            value={editData.title}
             onChangeText={val => handleOnChange(val, 'title')}
           />
           <TextInput
             style={styles.input}
             placeholder="Description"
             placeholderTextColor="#000"
+            value={editData.description}
             onChangeText={val => handleOnChange(val, 'description')}
           />
           <View style={styles.datePicker}>
@@ -76,10 +79,12 @@ export default function AddTask() {
               <View style={styles.calendar}>
                 <Text style={styles.date}>Date:</Text>
 
-                {data?.date ? (
+                {editData?.date ? (
                   <Pressable
                     onPress={() => setCalendarVisible(!calendarVisible)}>
-                    <Text style={styles.chooseDateActive}>{data?.date}</Text>
+                    <Text style={styles.chooseDateActive}>
+                      {editData?.date}
+                    </Text>
                   </Pressable>
                 ) : (
                   <Pressable
@@ -100,7 +105,7 @@ export default function AddTask() {
             </Text>
             <Picker
               style={styles.picker}
-              selectedValue={data?.status || 'Ongoing'}
+              selectedValue={editData?.status || 'Ongoing'}
               dropdownIconColor="#000"
               onValueChange={(itemValue, itemIndex) =>
                 handleOnChange(itemValue, 'status')
@@ -149,7 +154,7 @@ export default function AddTask() {
           onPress={() => {
             addTodo(data);
             setData({});
-            modalView();
+            editModalView();
           }}>
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
