@@ -46,8 +46,10 @@ export const CounterProvider: React.FC<{children: React.ReactNode}> = ({
   }, []);
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
+
     if (index === -1) {
       setSheet(false);
+      bottomSheetModalRef.current?.close();
     } else {
       setSheet(true);
     }

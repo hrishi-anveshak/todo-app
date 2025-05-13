@@ -18,8 +18,21 @@ interface DateType {
   status?: string;
 }
 export default function AddTask() {
+  const initialState = {
+    title: '',
+    description: '',
+    date: '',
+    status: '',
+  };
   const {modalVisible, modalView, todo, addTodo}: any =
     useContext(CounterContext);
+  const [taskDetails, setTaskDetails] = useState({
+    ...initialState,
+  });
+
+  const handleOnChange = (val: any, name: string) => {
+    setData(prev => ({...prev, [name]: val}));
+  };
 
   const [data, setData] = useState<DateType>({});
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -60,7 +73,8 @@ export default function AddTask() {
             style={styles.input}
             placeholder="Title"
             placeholderTextColor="#000"
-            onChangeText={titleChange}
+            // onChangeText={titleChange}
+            onChangeText={val => handleOnChange(val, 'title')}
           />
           <TextInput
             style={styles.input}
@@ -133,9 +147,9 @@ export default function AddTask() {
               dayTextColor: '#2d4150',
               arrowColor: 'orange',
               monthTextColor: 'blue',
-              textDayFontSize: 12, // Smaller text
-              textMonthFontSize: 14, // Smaller month text
-              textDayHeaderFontSize: 10, // Smaller header
+              textDayFontSize: 12,
+              textMonthFontSize: 14,
+              textDayHeaderFontSize: 10,
             }}
           />
         )}

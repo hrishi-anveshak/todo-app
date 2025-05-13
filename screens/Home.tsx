@@ -6,7 +6,7 @@ import AddTask from '../components/ui/Task';
 import List from '../components/ui/List';
 
 export default function Home() {
-  const {modalView, modalVisible}: any = useContext(CounterContext);
+  const {modalView, modalVisible, sheet}: any = useContext(CounterContext);
   const types = [
     {
       type: 'Ongoing',
@@ -30,33 +30,34 @@ export default function Home() {
   console.log(modalVisible);
   return (
     <View style={styles.page}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headText}>TO_DO</Text>
-        <Text style={styles.sub}>
-          Turn intentions into action with a smart, simple to-do experience.
-        </Text>
-      </View>
-      {/* Add */}
-      <TouchableOpacity onPress={modalView} style={styles.addButton}>
-        <Text style={styles.add}>+</Text>
-      </TouchableOpacity>
-      {/* Cards */}
-      <View style={styles.workSection}>
-        {types.map((val, index) => {
-          return (
-            <View key={index} style={styles.workCards}>
-              <Cards data={val} />
-            </View>
-          );
-        })}
-      </View>
+      {!sheet && (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.headText}>TO_DO</Text>
+            <Text style={styles.sub}>
+              Turn intentions into action with a smart, simple to-do experience.
+            </Text>
+          </View>
+          <TouchableOpacity onPress={modalView} style={styles.addButton}>
+            <Text style={styles.add}>+</Text>
+          </TouchableOpacity>
 
-      {/* Modal */}
-      <View style={styles.modal}>
-        <AddTask />
-      </View>
-      {/* Sheet */}
+          <View style={styles.workSection}>
+            {types.map((val, index) => {
+              return (
+                <View key={index} style={styles.workCards}>
+                  <Cards data={val} />
+                </View>
+              );
+            })}
+          </View>
+
+          <View style={styles.modal}>
+            <AddTask />
+          </View>
+        </>
+      )}
+
       <List />
     </View>
   );
