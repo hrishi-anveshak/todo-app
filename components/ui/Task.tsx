@@ -14,6 +14,8 @@ import {Picker} from '@react-native-picker/picker';
 
 interface DateType {
   dateString?: string;
+  date?: string;
+  status?: string;
 }
 export default function AddTask() {
   const {modalVisible, modalView, todo, addTodo}: any =
@@ -21,7 +23,7 @@ export default function AddTask() {
 
   const [data, setData] = useState<DateType>({});
   const [calendarVisible, setCalendarVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('Ongoing');
+
   const titleChange = useCallback((text: string) => {
     setData(prev => ({...prev, title: text}));
   }, []);
@@ -31,6 +33,7 @@ export default function AddTask() {
   const statusChange = useCallback((text: string) => {
     setData(prev => ({...prev, status: text}));
   }, []);
+
   console.log(data);
   console.log(todo);
   return (
@@ -94,7 +97,7 @@ export default function AddTask() {
             </Text>
             <Picker
               style={styles.picker}
-              selectedValue={selectedLanguage}
+              selectedValue={data?.status || 'Ongoing'}
               dropdownIconColor="#000"
               onValueChange={(itemValue, itemIndex) => statusChange(itemValue)}>
               <Picker.Item

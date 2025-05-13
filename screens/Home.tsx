@@ -57,7 +57,7 @@ export default function Home() {
         <AddTask />
       </View>
       {/* Sheet */}
-      {/* <List /> */}
+      <List />
     </View>
   );
 }
