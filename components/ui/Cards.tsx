@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {CounterContext} from '../../utils/ContextApi';
 
 export default function Cards({data}: any) {
+  const {handlePresentModalPress}: any = useContext(CounterContext);
   const styles = StyleSheet.create({
     card: {
       backgroundColor: data.color,
@@ -16,6 +18,7 @@ export default function Cards({data}: any) {
       shadowOpacity: 0.3,
       shadowRadius: 5,
       elevation: 15,
+      zIndex: 10,
     },
     head: {
       color: data.fontColor,
@@ -34,10 +37,27 @@ export default function Cards({data}: any) {
       fontSize: 23,
       fontFamily: 'Poppins-Bold',
     },
+    bg: {
+      backgroundColor: '#FDFFFF',
+    },
+    task: {
+      width: '45%',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#000',
+    },
+    container: {
+      flex: 1,
+    },
+    contentContainer: {
+      flex: 1,
+      padding: 36,
+      alignItems: 'center',
+    },
   });
 
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handlePresentModalPress}>
       <Text style={styles.head}>{data.type}</Text>
       <View style={styles.circle}>
         <Text style={styles.circleText}> {'>'}</Text>

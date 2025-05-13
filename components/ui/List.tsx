@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, useMemo, useRef} from 'react';
+import React, {useContext} from 'react';
 import {CounterContext} from '../../utils/ContextApi';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {
@@ -6,59 +6,34 @@ import {
   BottomSheetView,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import {
-  View,
-  Text,
-  Modal,
-  Button,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, Button, StyleSheet} from 'react-native';
 export default function List() {
-  const {todo}: any = useContext(CounterContext);
+  const {todo, handleSheetChanges, bottomSheetModalRef, sheet}: any =
+    useContext(CounterContext);
 
-  // ref
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
   return (
-    <View style={styles.bg}>
-      <GestureHandlerRootView style={styles.container}>
-        <BottomSheetModalProvider>
-          <Button
-            onPress={handlePresentModalPress}
-            title="Present Modal"
-            color="black"
-          />
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            onChange={handleSheetChanges}>
-            <BottomSheetView style={styles.contentContainer}>
-              <View>
-                {todo.map((val: any, index: any) => {
-                  return (
-                    <View key={index} style={styles.task}>
-                      <Text>{val.title}</Text>
-                      <Text>{val.description}</Text>
-                      <Text>{val.date}</Text>
-                      <Text>{val.status}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            </BottomSheetView>
-          </BottomSheetModal>
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
-    </View>
+    <GestureHandlerRootView style={[styles.container, sheet && {zIndex: 100}]}>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={['100%']}
+          onChange={handleSheetChanges}>
+          <BottomSheetView style={styles.contentContainer}>
+            {todo.map((val: any, index: any) => {
+              return (
+                <View key={index} style={styles.task}>
+                  <Text>{val.title}</Text>
+                  <Text>{val.description}</Text>
+                  <Text>{val.date}</Text>
+                  <Text>{val.status}</Text>
+                </View>
+              );
+            })}
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
 const styles = StyleSheet.create({
@@ -73,11 +48,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'grey',
   },
   contentContainer: {
     flex: 1,
-    padding: 36,
     alignItems: 'center',
   },
 });
