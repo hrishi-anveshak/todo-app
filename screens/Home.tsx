@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {CounterContext} from '../utils/ContextApi';
 import Cards from '../components/ui/Cards';
-import AddTask from '../components/ui/Task';
+import AddTask from '../components/ui/AddTask';
 import List from '../components/ui/List';
 
 export default function Home() {
@@ -50,13 +50,9 @@ export default function Home() {
               );
             })}
           </View>
-
-          <View style={styles.modal}>
-            <AddTask />
-          </View>
         </>
       )}
-
+      <AddTask />
       <List />
     </View>
   );
@@ -109,11 +105,5 @@ const styles = StyleSheet.create({
   },
   workCards: {
     marginTop: -20,
-  },
-  modal: {
-    justifyContent: 'center',
-    margin: 'auto',
-    width: 100,
-    height: 100,
   },
 });

@@ -1,4 +1,4 @@
-import React, {useContext, useState, useCallback} from 'react';
+import React, {useContext, useState, useCallback, useEffect} from 'react';
 import {Calendar} from 'react-native-calendars';
 import {
   View,
@@ -8,42 +8,81 @@ import {
   Pressable,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {CounterContext} from '../../utils/ContextApi';
 import {Picker} from '@react-native-picker/picker';
+import {v4 as uuidv4} from 'uuid';
 
 interface DateType {
   dateString?: string;
   date?: string;
   status?: string;
+  title?: string;
+  description?: string;
 }
 export default function AddTask() {
   const initialState = {
     title: '',
     description: '',
     date: '',
-    status: '',
+    status: 'Ongoing',
   };
-  const {modalVisible, modalView, todo, addTodo, edit}: any =
+  const {modalVisible, modalView, edit, addTodo, editTodo}: any =
     useContext(CounterContext);
-  const [taskDetails, setTaskDetails] = useState({
-    ...initialState,
-  });
 
   const handleOnChange = (val: any, name: string) => {
-    setData(prev => ({...prev, [name]: val}));
+    console.log(val, name);
+    setData(prev => ({
+      ...prev,
+      [name]: val,
+    }));
   };
 
-  const [data, setData] = useState<DateType>({});
+  const [data, setData] = useState<DateType>({
+    ...initialState,
+  });
+  useEffect(() => {
+    if (edit.id) {
+      setData(edit);
+    }
+  }, [edit]);
+
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  console.log(data);
-  console.log(todo);
+  const generateId = () => {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
+  };
+  const saveData = () => {
+    try {
+      console.log(data);
+      if (!edit || !data.date || !data.description || !data.title) {
+        Alert.alert('Todo App', 'Please complete form');
+        return;
+      }
+
+      if (edit.id !== undefined) {
+        editTodo({...data});
+      } else {
+        addTodo({...data, id: generateId()});
+      }
+
+      setData({...initialState});
+      modalView();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
+      style={[
+        styles.modalBox,
+        edit.length === 0 ? {zIndex: 1000} : {zIndex: 1000},
+      ]}
       onRequestClose={() => {
         modalView();
         setData({});
@@ -57,12 +96,15 @@ export default function AddTask() {
           setCalendarVisible(false);
         }}></Pressable>
       <View style={styles.modal}>
-        <Text style={styles.head}>Add Task</Text>
+        <Text style={styles.head}>
+          {edit?.id !== undefined ? 'Edit Task' : 'Add Task'}
+        </Text>
         <View style={styles.userInput}>
           <TextInput
             style={styles.input}
             placeholder="Title"
             placeholderTextColor="#000"
+            value={data?.title}
             onChangeText={val => handleOnChange(val, 'title')}
           />
           <TextInput
@@ -70,6 +112,7 @@ export default function AddTask() {
             placeholder="Description"
             placeholderTextColor="#000"
             onChangeText={val => handleOnChange(val, 'description')}
+            value={data?.description}
           />
           <View style={styles.datePicker}>
             <Pressable>
@@ -100,7 +143,7 @@ export default function AddTask() {
             </Text>
             <Picker
               style={styles.picker}
-              selectedValue={data?.status || 'Ongoing'}
+              selectedValue={data?.status}
               dropdownIconColor="#000"
               onValueChange={(itemValue, itemIndex) =>
                 handleOnChange(itemValue, 'status')
@@ -144,13 +187,7 @@ export default function AddTask() {
             }}
           />
         )}
-        <TouchableOpacity
-          style={styles.saveBtn}
-          onPress={() => {
-            addTodo(data);
-            setData({});
-            modalView();
-          }}>
+        <TouchableOpacity style={styles.saveBtn} onPress={() => saveData()}>
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -158,6 +195,12 @@ export default function AddTask() {
   );
 }
 const styles = StyleSheet.create({
+  modalBox: {
+    justifyContent: 'center',
+    margin: 'auto',
+    width: 100,
+    height: 100,
+  },
   back: {
     flex: 1,
     height: '100%',

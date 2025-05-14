@@ -14,7 +14,7 @@ interface TodoItem {
   description?: string;
   date?: string;
   status?: string;
-  key?: any;
+  key?: number;
   editData?: any;
 }
 
@@ -26,11 +26,12 @@ interface CounterContextType {
   editModalView: () => void;
   edit: TodoItem | null;
   editData: (key: keyof TodoItem, data: any) => void;
-  handlePresentModalPress: () => void;
   handleSheetChanges: (index: number) => void;
+  handlePresentModalPress: (val: string) => void;
   bottomSheetModalRef: RefObject<BottomSheetModal | null>;
   addTodo: (data: TodoItem) => void;
   todo: TodoItem[];
+  editTodo: (updatedItem: TodoItem, key: number) => void;
 }
 
 export const CounterContext = createContext<CounterContextType | undefined>(
@@ -47,10 +48,28 @@ export const CounterProvider: React.FC<{children: ReactNode}> = ({
   const [edit, setEdit] = useState<TodoItem | null>({});
   const [sheet, setSheet] = useState<boolean>(false);
 
-  const modalView = () => setModalVisible(!modalVisible);
+  const modalView = () => {
+    setModalVisible(!modalVisible);
+    if (modalVisible) {
+      setEdit({});
+    }
+  };
   const editModalView = () => setEditModalVisible(!editModalVisible);
 
   const addTodo = (data: TodoItem) => setTodo(prev => [data, ...prev]);
+  const editTodo = (updatedItem: TodoItem) => {
+    console.log('updatedItem', updatedItem);
+
+    const index = todo.findIndex(d => d.id === updatedItem.id);
+    console.log('todo', todo);
+    if (index > -1) {
+      const updatedList = [...todo];
+      updatedList[index] = updatedItem;
+      setTodo(updatedList);
+      console.log('updatedList', updatedList);
+      setEdit({});
+    }
+  };
 
   const editData = (key: keyof TodoItem, data: any) => {
     setEdit({});
@@ -59,6 +78,7 @@ export const CounterProvider: React.FC<{children: ReactNode}> = ({
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
+
     setSheet(!sheet);
   }, [sheet]);
 
@@ -88,6 +108,7 @@ export const CounterProvider: React.FC<{children: ReactNode}> = ({
         editData,
         editModalView,
         editModalVisible,
+        editTodo,
       }}>
       {children}
     </CounterContext.Provider>

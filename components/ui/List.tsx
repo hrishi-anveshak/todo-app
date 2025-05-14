@@ -9,7 +9,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-import EditTask from './EditTask';
+import AddTask from './AddTask';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function List() {
@@ -19,8 +19,7 @@ export default function List() {
     handleSheetChanges,
     bottomSheetModalRef,
     sheet,
-    editModalView,
-    edit,
+    modalView,
   }: any = useContext(CounterContext);
 
   const colorPalette = [
@@ -136,7 +135,7 @@ export default function List() {
 
   return (
     <GestureHandlerRootView
-      style={[styles.container, sheet ? {zIndex: 100} : {zIndex: -1}]}>
+      style={[styles.container, sheet ? {zIndex: 1} : {zIndex: -1}]}>
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
@@ -166,7 +165,7 @@ export default function List() {
                     <TouchableOpacity
                       onPress={() => {
                         editData(index, val);
-                        editModalView();
+                        modalView();
                       }}>
                       <Text>Edit</Text>
                     </TouchableOpacity>
@@ -197,7 +196,6 @@ export default function List() {
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
-      <EditTask editData={edit} />
     </GestureHandlerRootView>
   );
 }
@@ -245,10 +243,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     marginTop: 20,
+    zIndex: -1,
   },
   scrollContent: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 5,
+    zIndex: -1,
   },
 });

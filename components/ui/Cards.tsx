@@ -55,7 +55,6 @@ export default function Cards({data}: any) {
       alignItems: 'center',
     },
   });
-
   return (
     <TouchableOpacity style={styles.card} onPress={handlePresentModalPress}>
       <Text style={styles.head}>{data.type}</Text>
