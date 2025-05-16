@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {CounterContext} from '../../utils/ContextApi';
 import {GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 import {
@@ -9,20 +9,41 @@ import {
 } from '@gorhom/bottom-sheet';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-import AddTask from './AddTask';
 // import Icon from 'react-native-vector-icons/FontAwesome';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
+import {
+  setEdit,
+  setSheet,
+  toggleModal,
+  setBottomSheetRef,
+} from '../../redux/todoList/todoListSlice';
 
 export default function List() {
-  const {
-    todo,
-    editData,
-    handleSheetChanges,
-    bottomSheetModalRef,
-    sheet,
-    modalView,
-    status,
-  }: any = useContext(CounterContext);
+  const todo = useSelector((state: RootState) => state.todo.todo);
+  const sheet = useSelector((state: RootState) => state.todo.sheet);
+  const status = useSelector((state: RootState) => state.todo.status);
 
+  const bottomSheetRef = useSelector(
+    (state: RootState) => state.todo.bottomSheetRef,
+  );
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const dispatch = useDispatch();
+
+  if (bottomSheetRef) {
+    bottomSheetModalRef.current?.present();
+  } else {
+    bottomSheetModalRef.current?.close();
+  }
+  const handleSheetChanges = (index: number) => {
+    if (index === -1) {
+      dispatch(setBottomSheetRef(!bottomSheetRef));
+      dispatch(setSheet(false));
+    } else {
+      dispatch(setSheet(true));
+    }
+  };
   const colorPalette = [
     {
       background: '#FFDAC1',
@@ -135,6 +156,7 @@ export default function List() {
     colorPalette[Math.floor(Math.random() * colorPalette.length)];
 
   const filterdData = todo.filter(i => status.includes(i.status));
+  console.log('filterd', filterdData);
   console.log('todo', todo);
   return (
     <GestureHandlerRootView
@@ -171,8 +193,8 @@ export default function List() {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          editData(index, val);
-                          modalView();
+                          dispatch(setEdit({index, val}));
+                          dispatch(toggleModal());
                         }}>
                         <Text>Edit</Text>
                       </TouchableOpacity>

@@ -10,7 +10,13 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {CounterContext} from '../../utils/ContextApi';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  toggleModal,
+  addTodo,
+  editTodo,
+} from '../../redux/todoList/todoListSlice';
+import type {RootState} from '../../redux/store';
 import {Picker} from '@react-native-picker/picker';
 
 interface DateType {
@@ -27,9 +33,11 @@ export default function AddTask() {
     date: '',
     status: 'Ongoing',
   };
-  const {modalVisible, modalView, edit, addTodo, editTodo}: any =
-    useContext(CounterContext);
 
+  const dispatch = useDispatch();
+  const {modalVisible} = useSelector((state: RootState) => state.todo);
+  const edit = useSelector((state: RootState) => state.todo.edit?.val);
+  console.log(edit);
   const handleOnChange = (val: any, name: string) => {
     console.log(data);
     setData(prev => ({
@@ -56,20 +64,20 @@ export default function AddTask() {
       }
 
       if (edit?.id !== undefined) {
-        editTodo({...data});
+        dispatch(editTodo({...data}));
       } else {
-        addTodo({...data, id: generateId()});
+        dispatch(addTodo({...data, id: generateId()}));
       }
 
       setData({...initialState});
-      modalView();
+      dispatch(toggleModal());
     } catch (err) {
       console.log(err);
     }
   };
 
   const onClose = () => {
-    modalView();
+    dispatch(toggleModal());
     setData({...initialState});
     setCalendarVisible(false);
   };

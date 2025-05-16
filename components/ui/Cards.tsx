@@ -1,10 +1,14 @@
-import React, {useContext} from 'react';
+import React, {useRef} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import {CounterContext} from '../../utils/ContextApi';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  setSheet,
+  setBottomSheetRef,
+  setFilteredStatus,
+} from '../../redux/todoList/todoListSlice';
+import {RootState} from '../../redux/store';
 export default function Cards({data}: any) {
-  const {handlePresentModalPress, statusFilter}: any =
-    useContext(CounterContext);
+  const dispatch = useDispatch();
   const styles = StyleSheet.create({
     card: {
       backgroundColor: data.color,
@@ -56,12 +60,21 @@ export default function Cards({data}: any) {
       alignItems: 'center',
     },
   });
+
+  const bottomSheetRef = useSelector(
+    (state: RootState) => state.todo.bottomSheetRef,
+  );
+  const handlePresentModalPress = () => {
+    dispatch(setSheet(true));
+    dispatch(setBottomSheetRef(!bottomSheetRef));
+  };
+
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={() => {
         handlePresentModalPress();
-        statusFilter(data.type);
+        dispatch(setFilteredStatus(data.type));
       }}>
       <Text style={styles.head}>{data.type}</Text>
       <View style={styles.circle}>

@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 interface TodoItem {
-  id?: number;
   title?: string;
   description?: string;
   date?: string;
@@ -9,6 +8,10 @@ interface TodoItem {
   key?: number;
   editData?: any;
   filter?: string;
+  length?: number;
+  index?: number;
+  val?: {};
+  id?: string;
 }
 
 interface TodoState {
@@ -16,6 +19,7 @@ interface TodoState {
   editModalVisible: boolean;
   sheet: boolean;
   todo: TodoItem[];
+  bottomSheetRef: boolean;
   status: TodoItem[];
   edit: TodoItem | null;
 }
@@ -27,6 +31,7 @@ const initialState: TodoState = {
   todo: [],
   status: [],
   edit: null,
+  bottomSheetRef: false,
 };
 
 const todoSlice = createSlice({
@@ -50,7 +55,7 @@ const todoSlice = createSlice({
       state.edit = action.payload;
     },
     editTodo(state, action: PayloadAction<TodoItem>) {
-      const index = state.todo.findIndex(t => t.id === action.payload.id);
+      const index = state.todo.findIndex(i => i.id === action.payload.id);
       if (index > -1) {
         state.todo[index] = action.payload;
         state.edit = null;
@@ -59,12 +64,16 @@ const todoSlice = createSlice({
     setFilteredStatus(state, action: PayloadAction<TodoItem[]>) {
       state.status = action.payload;
     },
+    setBottomSheetRef: (state, action: PayloadAction<any>) => {
+      state.bottomSheetRef = action.payload;
+    },
   },
 });
 
 export const {
   toggleModal,
   toggleEditModal,
+  setBottomSheetRef,
   setSheet,
   addTodo,
   setEdit,

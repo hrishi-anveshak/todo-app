@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
+import React, {useRef} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {CounterContext} from '../utils/ContextApi';
+
 import Cards from '../components/ui/Cards';
 import AddTask from '../components/ui/AddTask';
 import List from '../components/ui/List';
