@@ -4,9 +4,13 @@ import {CounterContext} from '../utils/ContextApi';
 import Cards from '../components/ui/Cards';
 import AddTask from '../components/ui/AddTask';
 import List from '../components/ui/List';
+import {useDispatch, useSelector} from 'react-redux';
+import {toggleModal} from '../redux/todoList/todoListSlice';
+import type {RootState} from '../redux/store';
 
 export default function Home() {
-  const {modalView, modalVisible, sheet}: any = useContext(CounterContext);
+  const dispatch = useDispatch();
+  const {sheet} = useSelector((state: RootState) => state.todo);
   const types = [
     {
       type: 'Ongoing',
@@ -37,7 +41,9 @@ export default function Home() {
               Turn intentions into action with a smart, simple to-do experience.
             </Text>
           </View>
-          <TouchableOpacity onPress={modalView} style={styles.addButton}>
+          <TouchableOpacity
+            onPress={() => dispatch(toggleModal())}
+            style={styles.addButton}>
             <Text style={styles.add}>+</Text>
           </TouchableOpacity>
 

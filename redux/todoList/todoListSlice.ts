@@ -44,7 +44,7 @@ const todoSlice = createSlice({
       state.sheet = action.payload;
     },
     addTodo(state, action: PayloadAction<TodoItem>) {
-      state.todo.push(action.payload);
+      state.todo = [...state.todo, action.payload];
     },
     setEdit(state, action: PayloadAction<TodoItem | null>) {
       state.edit = action.payload;
