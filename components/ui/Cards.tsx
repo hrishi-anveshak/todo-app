@@ -3,7 +3,8 @@ import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {CounterContext} from '../../utils/ContextApi';
 
 export default function Cards({data}: any) {
-  const {handlePresentModalPress}: any = useContext(CounterContext);
+  const {handlePresentModalPress, statusFilter}: any =
+    useContext(CounterContext);
   const styles = StyleSheet.create({
     card: {
       backgroundColor: data.color,
@@ -56,7 +57,12 @@ export default function Cards({data}: any) {
     },
   });
   return (
-    <TouchableOpacity style={styles.card} onPress={handlePresentModalPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => {
+        handlePresentModalPress();
+        statusFilter(data.type);
+      }}>
       <Text style={styles.head}>{data.type}</Text>
       <View style={styles.circle}>
         <Text style={styles.circleText}> {'>'}</Text>

@@ -20,6 +20,7 @@ export default function List() {
     bottomSheetModalRef,
     sheet,
     modalView,
+    status,
   }: any = useContext(CounterContext);
 
   const colorPalette = [
@@ -133,6 +134,8 @@ export default function List() {
   const getRandomColor = () =>
     colorPalette[Math.floor(Math.random() * colorPalette.length)];
 
+  const filterdData = todo.filter(i => status.includes(i.status));
+  console.log('todo', todo);
   return (
     <GestureHandlerRootView
       style={[styles.container, sheet ? {zIndex: 1} : {zIndex: -1}]}>
@@ -148,50 +151,57 @@ export default function List() {
           onChange={handleSheetChanges}>
           <BottomSheetView style={styles.contentContainer}>
             <BottomSheetScrollView contentContainerStyle={styles.scrollContent}>
-              {todo.map((val: any, index: number) => {
-                const randomColor = getRandomColor();
-                return (
-                  <View
-                    key={index}
-                    style={[
-                      styles.task,
-                      {backgroundColor: randomColor.background},
-                    ]}>
-                    <Text
-                      numberOfLines={2}
-                      style={[styles.head, {color: randomColor.headingColor}]}>
-                      {val.title}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        editData(index, val);
-                        modalView();
-                      }}>
-                      <Text>Edit</Text>
-                    </TouchableOpacity>
-                    <Text
+              {filterdData.length > 0 ? (
+                filterdData.map((val: any, index: number) => {
+                  const randomColor = getRandomColor();
+                  return (
+                    <View
+                      key={index}
                       style={[
-                        styles.des,
-                        {color: randomColor.descriptionColor},
+                        styles.task,
+                        {backgroundColor: randomColor.background},
                       ]}>
-                      {val.description}
-                    </Text>
-                    <View style={[styles.dateStatus, {marginTop: 'auto'}]}>
+                      <Text
+                        numberOfLines={2}
+                        style={[
+                          styles.head,
+                          {color: randomColor.headingColor},
+                        ]}>
+                        {val.title}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          editData(index, val);
+                          modalView();
+                        }}>
+                        <Text>Edit</Text>
+                      </TouchableOpacity>
                       <Text
                         style={[
-                          styles.status,
-                          {color: randomColor.statusColor},
+                          styles.des,
+                          {color: randomColor.descriptionColor},
                         ]}>
-                        {val.status}
+                        {val.description}
                       </Text>
-                      <Text
-                        style={[styles.date, {color: randomColor.dateColor}]}>
-                        {val.date}
-                      </Text>
+                      <View style={[styles.dateStatus, {marginTop: 'auto'}]}>
+                        <Text
+                          style={[
+                            styles.status,
+                            {color: randomColor.statusColor},
+                          ]}>
+                          {val.status}
+                        </Text>
+                        <Text
+                          style={[styles.date, {color: randomColor.dateColor}]}>
+                          {val.date}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <Text>No Task Found!</Text>
+              )}
             </BottomSheetScrollView>
           </BottomSheetView>
         </BottomSheetModal>
@@ -250,5 +260,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 5,
     zIndex: -1,
+  },
+  emptyHead: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 20,
+    color: '#000',
   },
 });

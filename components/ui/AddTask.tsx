@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {CounterContext} from '../../utils/ContextApi';
 import {Picker} from '@react-native-picker/picker';
-import {v4 as uuidv4} from 'uuid';
 
 interface DateType {
   dateString?: string;
@@ -32,7 +31,7 @@ export default function AddTask() {
     useContext(CounterContext);
 
   const handleOnChange = (val: any, name: string) => {
-    console.log(val, name);
+    console.log(data);
     setData(prev => ({
       ...prev,
       [name]: val,
@@ -42,11 +41,6 @@ export default function AddTask() {
   const [data, setData] = useState<DateType>({
     ...initialState,
   });
-  useEffect(() => {
-    if (edit.id) {
-      setData(edit);
-    }
-  }, [edit]);
 
   const [calendarVisible, setCalendarVisible] = useState(false);
 
@@ -56,12 +50,12 @@ export default function AddTask() {
   const saveData = () => {
     try {
       console.log(data);
-      if (!edit || !data.date || !data.description || !data.title) {
+      if (!data.date || !data.description || !data.title) {
         Alert.alert('Todo App', 'Please complete form');
         return;
       }
 
-      if (edit.id !== undefined) {
+      if (edit?.id !== undefined) {
         editTodo({...data});
       } else {
         addTodo({...data, id: generateId()});
@@ -74,6 +68,18 @@ export default function AddTask() {
     }
   };
 
+  const onClose = () => {
+    modalView();
+    setData({...initialState});
+    setCalendarVisible(false);
+  };
+  useEffect(() => {
+    if (edit?.id) {
+      setData({...edit});
+      console.log(edit);
+    }
+  }, [edit]);
+
   return (
     <Modal
       animationType="slide"
@@ -81,20 +87,10 @@ export default function AddTask() {
       visible={modalVisible}
       style={[
         styles.modalBox,
-        edit.length === 0 ? {zIndex: 1000} : {zIndex: 1000},
+        edit?.length === 0 ? {zIndex: 1000} : {zIndex: 1000},
       ]}
-      onRequestClose={() => {
-        modalView();
-        setData({});
-        setCalendarVisible(false);
-      }}>
-      <Pressable
-        style={styles.back}
-        onPress={() => {
-          modalView();
-          setData({});
-          setCalendarVisible(false);
-        }}></Pressable>
+      onRequestClose={onClose}>
+      <Pressable style={styles.back} onPress={onClose}></Pressable>
       <View style={styles.modal}>
         <Text style={styles.head}>
           {edit?.id !== undefined ? 'Edit Task' : 'Add Task'}
