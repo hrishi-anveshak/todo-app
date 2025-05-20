@@ -39,19 +39,24 @@ export default function AddTask() {
   const dispatch = useDispatch();
   const {modalVisible} = useSelector((state: RootState) => state.todo);
   const edit = useSelector((state: RootState) => state.todo.edit?.val);
-  console.log(edit);
+
   const handleOnChange = (val: any, name: string) => {
     console.log(data);
     setData(prev => ({
       ...prev,
       [name]: val.replace(/^\s+/g, ''),
     }));
+    setErrData({...errData, [name]: ''});
   };
 
   const [data, setData] = useState<DateType>({
     ...initialState,
   });
-  const [validation, setValidation] = useState(true);
+  const [errData, setErrData] = useState({
+    ...initialState,
+    status: '',
+  });
+
   const [calendarVisible, setCalendarVisible] = useState(false);
 
   const generateId = () => {
@@ -60,22 +65,32 @@ export default function AddTask() {
 
   const saveData = () => {
     try {
+      let isValid = true;
+      let cpyErr = {...errData};
+      Object.keys(data).map(key => {
+        if (data[key].length === 0) {
+          isValid = false;
+          cpyErr[key] = `Please enter valid ${key}`;
+        }
+      });
+      setErrData(cpyErr);
+      if (isValid) {
+        if (edit?.id !== undefined) {
+          dispatch(editTodo({...data}));
+        } else {
+          dispatch(addTodo({...data, id: generateId()}));
+        }
+
+        setData({...initialState});
+        dispatch(toggleModal());
+      }
       console.log(data);
-      if (!data.date || !data.description || !data.title) {
-        setValidation(false);
-        return;
-      } else {
-        setValidation(true);
-      }
-
-      if (edit?.id !== undefined) {
-        dispatch(editTodo({...data}));
-      } else {
-        dispatch(addTodo({...data, id: generateId()}));
-      }
-
-      setData({...initialState});
-      dispatch(toggleModal());
+      // if (!data.date || !data.description || !data.title) {
+      //   setValidation(false);
+      //   return;
+      // } else {
+      //   setValidation(true);
+      // }
     } catch (err) {
       console.log(err);
     }
@@ -93,7 +108,7 @@ export default function AddTask() {
     }
   }, [edit]);
   useEffect(() => {
-    setValidation(true);
+    setErrData({...initialState});
   }, [modalVisible]);
 
   return (
@@ -117,22 +132,19 @@ export default function AddTask() {
               style={styles.input}
               placeholder="Title"
               placeholderTextColor="#000"
-              value={data?.title}
+              value={edit && data?.title}
               onChangeText={val => handleOnChange(val, 'title')}
             />
-            {!data?.title.length > 0 && !validation && (
-              <Text style={styles.validationText}>Please add title</Text>
-            )}
+            <Text style={styles.validationText}>{errData.title}</Text>
+
             <TextInput
               style={styles.input}
               placeholder="Description"
               placeholderTextColor="#000"
               onChangeText={val => handleOnChange(val, 'description')}
-              value={data?.description}
+              value={edit && data?.description}
             />
-            {!data?.description.length > 0 && !validation && (
-              <Text style={styles.validationText}>Please add description</Text>
-            )}
+            <Text style={styles.validationText}>{errData.description}</Text>
             <View style={styles.datePicker}>
               <Pressable>
                 <View style={styles.calendar}>
@@ -187,9 +199,7 @@ export default function AddTask() {
                 />
               </Picker>
             </View>
-            {!data?.date.length > 0 && !validation && (
-              <Text style={styles.validationText}>Please choose date</Text>
-            )}
+            <Text style={styles.validationText}>{errData.date}</Text>
           </View>
           {calendarVisible && (
             <Calendar
@@ -241,7 +251,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     top: 170,
     width: '90%',
-    height: 320,
     backgroundColor: '#FDFFFF',
     borderRadius: 20,
     shadowColor: '#000',
@@ -312,6 +321,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 5,
     margin: 'auto',
+    marginBottom: 15,
   },
   saveText: {
     fontFamily: 'Poppins-Regular',
