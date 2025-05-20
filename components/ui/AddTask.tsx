@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Pressable,
   TextInput,
+  KeyboardAvoidingView,
+  Keyboard,
   TouchableOpacity,
   Alert,
 } from 'react-native';
@@ -42,25 +44,28 @@ export default function AddTask() {
     console.log(data);
     setData(prev => ({
       ...prev,
-      [name]: val,
+      [name]: val.replace(/^\s+/g, ''),
     }));
   };
 
   const [data, setData] = useState<DateType>({
     ...initialState,
   });
-
+  const [validation, setValidation] = useState(true);
   const [calendarVisible, setCalendarVisible] = useState(false);
 
   const generateId = () => {
     return 'id-' + Math.random().toString(36).substr(2, 9);
   };
+
   const saveData = () => {
     try {
       console.log(data);
       if (!data.date || !data.description || !data.title) {
-        Alert.alert('Todo App', 'Please complete form');
+        setValidation(false);
         return;
+      } else {
+        setValidation(true);
       }
 
       if (edit?.id !== undefined) {
@@ -87,115 +92,132 @@ export default function AddTask() {
       console.log(edit);
     }
   }, [edit]);
+  useEffect(() => {
+    setValidation(true);
+  }, [modalVisible]);
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      style={[
-        styles.modalBox,
-        edit?.length === 0 ? {zIndex: 1000} : {zIndex: 1000},
-      ]}
-      onRequestClose={onClose}>
-      <Pressable style={styles.back} onPress={onClose}></Pressable>
-      <View style={styles.modal}>
-        <Text style={styles.head}>
-          {edit?.id !== undefined ? 'Edit Task' : 'Add Task'}
-        </Text>
-        <View style={styles.userInput}>
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            placeholderTextColor="#000"
-            value={data?.title}
-            onChangeText={val => handleOnChange(val, 'title')}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Description"
-            placeholderTextColor="#000"
-            onChangeText={val => handleOnChange(val, 'description')}
-            value={data?.description}
-          />
-          <View style={styles.datePicker}>
-            <Pressable>
-              <View style={styles.calendar}>
-                <Text style={styles.date}>Date:</Text>
+    <KeyboardAvoidingView behavior="position">
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        style={[
+          styles.modalBox,
+          edit?.length === 0 ? {zIndex: 1000} : {zIndex: 1000},
+        ]}
+        onRequestClose={onClose}>
+        <Pressable style={styles.back} onPress={onClose}></Pressable>
+        <View style={styles.modal}>
+          <Text style={styles.head}>
+            {edit?.id !== undefined ? 'Edit Task' : 'Add Task'}
+          </Text>
+          <View style={styles.userInput}>
+            <TextInput
+              style={styles.input}
+              placeholder="Title"
+              placeholderTextColor="#000"
+              value={data?.title}
+              onChangeText={val => handleOnChange(val, 'title')}
+            />
+            {!data?.title.length > 0 && !validation && (
+              <Text style={styles.validationText}>Please add title</Text>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Description"
+              placeholderTextColor="#000"
+              onChangeText={val => handleOnChange(val, 'description')}
+              value={data?.description}
+            />
+            {!data?.description.length > 0 && !validation && (
+              <Text style={styles.validationText}>Please add description</Text>
+            )}
+            <View style={styles.datePicker}>
+              <Pressable>
+                <View style={styles.calendar}>
+                  <Text style={styles.date}>Date:</Text>
 
-                {data?.date ? (
-                  <Pressable
-                    onPress={() => setCalendarVisible(!calendarVisible)}>
-                    <Text style={styles.chooseDateActive}>{data?.date}</Text>
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    onPress={() => setCalendarVisible(!calendarVisible)}>
-                    <Text style={styles.chooseDate}>Choose Date</Text>
-                  </Pressable>
-                )}
-              </View>
-            </Pressable>
-            <Text
-              style={{
-                fontSize: 14,
-                fontFamily: 'Poppins-Regular',
-                paddingTop: 4,
-                paddingLeft: 25,
-              }}>
-              Status:
-            </Text>
-            <Picker
-              style={styles.picker}
-              selectedValue={data?.status}
-              dropdownIconColor="#000"
-              onValueChange={(itemValue, itemIndex) =>
-                handleOnChange(itemValue, 'status')
-              }>
-              <Picker.Item
-                style={{fontSize: 14}}
-                label="Ongoing"
-                value="Ongoing"
-              />
-              <Picker.Item
-                style={{fontSize: 14}}
-                label="Pending"
-                value="Pending"
-              />
-              <Picker.Item
-                style={{fontSize: 14}}
-                label="Completed"
-                value="Completed"
-              />
-            </Picker>
+                  {data?.date ? (
+                    <Pressable
+                      onPress={() => setCalendarVisible(!calendarVisible)}>
+                      <Text style={styles.chooseDateActive}>{data?.date}</Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        setCalendarVisible(!calendarVisible);
+                      }}>
+                      <Text style={styles.chooseDate}>Choose Date</Text>
+                    </Pressable>
+                  )}
+                </View>
+              </Pressable>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: 'Poppins-Regular',
+                  paddingTop: 4,
+                  paddingLeft: 25,
+                }}>
+                Status:
+              </Text>
+              <Picker
+                style={styles.picker}
+                selectedValue={data?.status}
+                dropdownIconColor="#000"
+                onValueChange={(itemValue, itemIndex) =>
+                  handleOnChange(itemValue, 'status')
+                }>
+                <Picker.Item
+                  style={{fontSize: 14}}
+                  label="Ongoing"
+                  value="Ongoing"
+                />
+                <Picker.Item
+                  style={{fontSize: 14}}
+                  label="Pending"
+                  value="Pending"
+                />
+                <Picker.Item
+                  style={{fontSize: 14}}
+                  label="Completed"
+                  value="Completed"
+                />
+              </Picker>
+            </View>
+            {!data?.date.length > 0 && !validation && (
+              <Text style={styles.validationText}>Please choose date</Text>
+            )}
           </View>
+          {calendarVisible && (
+            <Calendar
+              onDayPress={day => {
+                setData(prev => ({...prev, date: day.dateString}));
+                setCalendarVisible(!calendarVisible);
+              }}
+              theme={{
+                backgroundColor: '#FDFFFF',
+                calendarBackground: '#FDFFFF',
+                selectedDayBackgroundColor: '#00adf5',
+                selectedDayTextColor: '#ffffff',
+                todayTextColor: '#00adf5',
+                dayTextColor: '#2d4150',
+                arrowColor: 'orange',
+                monthTextColor: 'blue',
+                textDayFontSize: 12,
+                textMonthFontSize: 14,
+                textDayHeaderFontSize: 10,
+              }}
+            />
+          )}
+          <TouchableOpacity style={styles.saveBtn} onPress={() => saveData()}>
+            <Text style={styles.saveText}>Save</Text>
+          </TouchableOpacity>
         </View>
-        {calendarVisible && (
-          <Calendar
-            onDayPress={day => {
-              setData(prev => ({...prev, date: day.dateString}));
-              setCalendarVisible(!calendarVisible);
-            }}
-            theme={{
-              backgroundColor: '#FDFFFF',
-              calendarBackground: '#FDFFFF',
-              selectedDayBackgroundColor: '#00adf5',
-              selectedDayTextColor: '#ffffff',
-              todayTextColor: '#00adf5',
-              dayTextColor: '#2d4150',
-              arrowColor: 'orange',
-              monthTextColor: 'blue',
-              textDayFontSize: 12,
-              textMonthFontSize: 14,
-              textDayHeaderFontSize: 10,
-            }}
-          />
-        )}
-        <TouchableOpacity style={styles.saveBtn} onPress={() => saveData()}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
+      </Modal>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
@@ -296,5 +318,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
     textAlign: 'center',
+  },
+  validationText: {
+    color: '#900',
+    fontSize: 12,
+    paddingLeft: 10,
   },
 });
