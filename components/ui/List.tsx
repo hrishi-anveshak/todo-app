@@ -155,7 +155,7 @@ export default function List() {
   const getRandomColor = () =>
     colorPalette[Math.floor(Math.random() * colorPalette.length)];
 
-  const filterdData = todo.filter(i => status.includes(i.status));
+  const filterdData = todo?.filter((i: any) => status.includes(i.status));
   console.log('filterd', filterdData);
   console.log('todo', todo);
   return (
@@ -173,7 +173,7 @@ export default function List() {
           onChange={handleSheetChanges}>
           <BottomSheetView style={styles.contentContainer}>
             <BottomSheetScrollView contentContainerStyle={styles.scrollContent}>
-              {filterdData.length > 0 ? (
+              {filterdData?.length > 0 ? (
                 filterdData.map((val: any, index: number) => {
                   const randomColor = getRandomColor();
                   return (
